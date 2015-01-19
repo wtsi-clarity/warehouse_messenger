@@ -1,0 +1,3 @@
+A daemon that consumes a RabbitMQ queue.
+
+When it receives a new message, it "enhances" the message (adds more information), and sends it on to the unified warehouse builder queue.
