@@ -40,14 +40,15 @@ sub prepare_messages {
   my @messages = ();
 
   foreach my $model_limsid (@{$self->_lims_ids}) {
-    my $model_msg = $self->_format_message($self->_get_model_message($model_limsid));
-    push @messages, $model_msg;
+    my $msg = $self->get_message($model_limsid);
+    $msg = $self->_format_message($msg);
+    push @messages, $msg;
   }
 
   return \@messages;
 }
 
-sub _get_model_message {
+sub get_message {
   my ($self, $model_limsid) = @_;
 
   my $dao_type = q[warehouse_messenger::dao::] . $self->type . q[_dao];
@@ -110,6 +111,10 @@ warehouse_messenger::message_enhancer
 
   Accepts an XML::LibXML::Nodelist and a Node method method name. Invokes the method on each
   Node within the Nodelist and returns an array (without duplicates)
+
+=head2 get_message
+
+  Get a json string of a message to be sent
 
 =head1 CONFIGURATION AND ENVIRONMENT
 

@@ -53,7 +53,7 @@ my $base_dir = 't/data/sample_enhancer/';
     timestamp   => '2014-11-25 12:06:27',
   ) ) ;
 
-  $me->mock(q{_get_model_message}, sub {
+  $me->mock(q{get_message}, sub {
     my %test_msg = ( 'key1' => 'value1', 'key2' => 'value2');
     return \%test_msg;
   });

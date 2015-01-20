@@ -73,11 +73,11 @@ has 'manager' => (
 );
 sub _build_manager {
   my $self = shift;
-  my @users = map { $self->_get_message($_) } @{$self->study_user_ids};
+  my @users = map { $self->get_message($_) } @{$self->study_user_ids};
   return to_json(\@users);
 }
 
-sub _get_message {
+sub get_message {
   my ($self, $lims_id) = @_;
   my $study_user = $self->_get_study_user(lims_id => $_);
 
