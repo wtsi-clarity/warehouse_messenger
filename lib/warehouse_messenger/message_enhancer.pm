@@ -36,15 +36,7 @@ requires qw/ type _build__lims_ids/;
 
 sub prepare_messages {
   my $self = shift;
-
-  my @messages = ();
-
-  foreach my $model_limsid (@{$self->_lims_ids}) {
-    my $msg = $self->get_message($model_limsid);
-    $msg = $self->_format_message($msg);
-    push @messages, $msg;
-  }
-
+  my @messages = map { $self->_get_formatted_message($_) } @{$self->_lims_ids};
   return \@messages;
 }
 
@@ -57,16 +49,6 @@ sub get_message {
   return $model_dao->to_message;
 }
 
-sub _format_message {
-  my ($self, $msg) = @_;
-
-  my $formatted_msg = {};
-  $formatted_msg->{$self->type} = $msg;
-  $formatted_msg->{'lims'} = $self->config->clarity_mq->{'id_lims'};
-
-  return $formatted_msg;
-}
-
 sub get_values_from_nodelist {
   my ($self, $function, $nodelist) = @_;
   my @values = uniq( map { $_->$function } $nodelist->get_nodelist());
@@ -75,8 +57,23 @@ sub get_values_from_nodelist {
 
 sub sample_limsid_node_list {
   my $self = shift;
-
   return $self->input_artifacts->findnodes($SAMPLE_LIMS_ID_PATH);
+}
+
+sub _get_formatted_message {
+  my ($self, $lims_id) = @_;
+  my $msg = $self->get_message($lims_id);
+  return $self->_format_message($msg);
+}
+
+sub _format_message {
+  my ($self, $msg) = @_;
+
+  my $formatted_msg = {};
+  $formatted_msg->{$self->type} = $msg;
+  $formatted_msg->{'lims'} = $self->config->clarity_mq->{'id_lims'};
+
+  return $formatted_msg;
 }
 
 1;
