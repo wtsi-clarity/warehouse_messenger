@@ -12,7 +12,7 @@ has 'config'      => (
   lazy_build      => 1,
 );
 sub _build_config {
-  return warehosue_messenger::config->new();
+  return warehouse_messenger::config->new();
 }
 
 1;

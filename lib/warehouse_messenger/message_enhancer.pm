@@ -3,6 +3,7 @@ package warehouse_messenger::message_enhancer;
 use Moose::Role;
 use XML::LibXML;
 use Readonly;
+use List::MoreUtils qw/uniq/;
 
 with qw/warehouse_messenger::roles::clarity_process warehouse_messenger::configurable/;
 
@@ -65,6 +66,12 @@ sub _format_message {
   return $formatted_msg;
 }
 
+sub get_values_from_nodelist {
+  my ($self, $function, $nodelist) = @_;
+  my @values = uniq( map { $_->$function } $nodelist->get_nodelist());
+  return \@values;
+}
+
 sub sample_limsid_node_list {
   my $self = shift;
 
@@ -98,6 +105,11 @@ warehouse_messenger::message_enhancer
 =head2 sample_limsid_node_list
 
   Getting the sample nodes list from the input artifacts.
+
+=head2 get_values_from_nodelist
+
+  Accepts an XML::LibXML::Nodelist and a Node method method name. Invokes the method on each
+  Node within the Nodelist and returns an array (without duplicates)
 
 =head1 CONFIGURATION AND ENVIRONMENT
 

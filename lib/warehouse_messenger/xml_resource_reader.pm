@@ -48,7 +48,7 @@ __END__
 
 =head1 NAME
 
-wtsi_clarity::util::xml_resource_reader
+warehouse_messenger::xml_resource_reader
 
 =head1 SYNOPSIS
 

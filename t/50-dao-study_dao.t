@@ -3,37 +3,34 @@ use warnings;
 
 use Test::More tests => 27;
 use Test::Exception;
+use Test::MockObject::Extends;
+use Moose;
+use XML::LibXML;
 use JSON;
 
 use_ok('warehouse_messenger::dao::study_dao');
 
-local $ENV{'WTSI_CLARITY_HOME'}= q[t/data/config];
-
-use warehouse_messenger::config;
-my $config = warehouse_messenger::config->new();
-my $base_uri = $config->clarity_api->{'base_uri'};
-
-local $ENV{'WTSICLARITY_WEBCACHE_DIR'} = 't/data/dao/study_dao';
-local $ENV{'SAVE2WTSICLARITY_WEBCACHE'} = 0;
+my $base = 't/data/study_dao/';
+my $study_xml = XML::LibXML->load_xml(location => $base . 'projects.SYY154');
 
 {
   my $lims_id = '1234';
-  my $study_dao = warehouse_messenger::dao::study_dao->new( lims_id => $lims_id);
+  my $study_dao = warehouse_messenger::dao::study_dao->new(lims_id => $lims_id);
   isa_ok($study_dao, 'warehouse_messenger::dao::study_dao');
 }
 
 {
   my $lims_id = 'SYY154';
-  my $study_dao = warehouse_messenger::dao::study_dao->new( lims_id => $lims_id);
+  my $study_dao = Test::MockObject::Extends->new(warehouse_messenger::dao::study_dao->new(lims_id => $lims_id));
 
-  my $artifact_xml;
-  lives_ok { $artifact_xml = $study_dao->_artifact_xml} 'got study artifacts';
-  is(ref $artifact_xml, 'XML::LibXML::Document', 'Got back an XML Document');
-}
+  $study_dao->mock(q/_get_xml/, sub {
+    return $study_xml;
+  });
 
-{
-  my $lims_id = 'SYY154';
-  my $study_dao = warehouse_messenger::dao::study_dao->new( lims_id => $lims_id);
+  my $_xml;
+  lives_ok { $_xml = $study_dao->_xml} 'got study artifacts';
+  isa_ok($_xml, 'XML::LibXML::Document');
+
   is($study_dao->id, q{SYY154}, 'Returns the correct id of the study');
   is($study_dao->name, q{SS_TEST}, 'Returns the correct name of the study');
   is($study_dao->reference_genome, q{test reference genome}, 'Returns the correct reference genome of the study');
@@ -56,13 +53,35 @@ local $ENV{'SAVE2WTSICLARITY_WEBCACHE'} = 0;
   my $expected_study_user_ids = [21];
   is_deeply($study_dao->study_user_ids, $expected_study_user_ids, 'Returns the correct id of the user of the study');
 
+  $study_dao->mock(q/_get_study_user/, sub {
+    my $anon_class = Moose::Meta::Class->create_anon_class(
+      attributes => [
+        Class::MOP::Attribute->new(
+            name => (
+              accessor => 'name',
+              default  => 'John Smith',
+          )
+        ),
+        Class::MOP::Attribute->new(
+          email => (
+            accessor => 'email',
+            default  => 'js123@test.com',
+          )
+        ),
+        Class::MOP::Attribute->new(
+          login => (
+            accessor => 'login',
+            default  => 'js123',
+          )
+        )
+      ],
+    );
+    return $anon_class->new_object();
+  });
+
   my $study_user_json = JSON->new->utf8->encode([ {name => "John Smith", email => "js123\@test.com", login => "js123"} ]);
   is($study_dao->manager, $study_user_json, 'Returns the correct user of the study');
-}
 
-{
-  my $lims_id = 'SYY154';
-  my $study_dao = warehouse_messenger::dao::study_dao->new( lims_id => $lims_id);
   my $study_json;
   lives_ok { $study_json = $study_dao->to_message } 'can serialize study object';
 

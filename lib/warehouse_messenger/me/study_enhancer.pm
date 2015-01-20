@@ -5,7 +5,7 @@ use warehouse_messenger::dao::sample_dao;
 use warehouse_messenger::dao::study_dao;
 use List::MoreUtils qw/uniq/;
 
-with 'warehouse_messenger::mq::message_enhancer';
+with 'warehouse_messenger::message_enhancer';
 
 our $VERSION = '0.0';
 
@@ -22,7 +22,7 @@ sub _build__lims_ids {
   my $sample_limsid_node_list = $self->sample_limsid_node_list;
   my $sample_limsids = $self->get_values_from_nodelist('getValue', $sample_limsid_node_list);
   foreach my $sample_limsid (@{$sample_limsids}) {
-    my $sample_dao = warehouse_messenger::dao::sample_dao->new(lims_id => $sample_limsid);
+    my $sample_dao = $self->_get_sample($sample_limsid);
     push @study_lims_ids, $sample_dao->project_limsid;
   }
 
@@ -31,17 +31,22 @@ sub _build__lims_ids {
   return \@study_lims_ids;
 }
 
+sub _get_sample {
+  my ($self, $lims_id) = @_;
+  return warehouse_messenger::dao::sample_dao->new(lims_id => $lims_id);
+}
+
 1;
 
 __END__
 
 =head1 NAME
 
-warehouse_messenger::mq::me::study_enhancer
+warehouse_messenger::me::study_enhancer
 
 =head1 SYNOPSIS
 
-  my $study_enhancer = warehouse_messenger::mq::me::study_enhancer->new();
+  my $study_enhancer = warehouse_messenger::me::study_enhancer->new();
   $study_enhancer->prepare_message();
 
 =head1 DESCRIPTION

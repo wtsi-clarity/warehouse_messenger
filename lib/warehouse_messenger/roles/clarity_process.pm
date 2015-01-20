@@ -22,7 +22,6 @@ has 'process_doc'  => (
   isa             => 'XML::LibXML::Document',
   is              => 'ro',
   required        => 0,
-  traits          => [ 'NoGetopt' ],
   lazy_build      => 1,
   handles         => {'findnodes' => 'findnodes'},
 );
@@ -47,24 +46,17 @@ sub _build_input_artifacts {
   return $self->request->batch_retrieve('artifacts', $input_uris);
 }
 
-sub get_values_from_nodelist {
-  my ($self, $function, $nodelist) = @_;
-  my @values = uniq( map { $_->$function } $nodelist->get_nodelist());
-
-  return \@values;
-}
-
 1;
 
 __END__
 
 =head1 NAME
 
-util::roles::clarity_process_base
+warehouse_messenger::roles::clarity_process
 
 =head1 SYNOPSIS
 
-  with 'util::roles::clarity_process_base';
+  with 'warehouse_messenger::roles::clarity_process';
   $self->fetch_and_parse('http://test.com/test/234');
 
 =head1 DESCRIPTION

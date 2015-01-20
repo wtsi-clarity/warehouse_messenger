@@ -1,4 +1,4 @@
-package warehosue_messenger::config::config;
+package warehouse_messenger::config;
 
 use Moose;
 use File::Spec::Functions;
@@ -17,6 +17,7 @@ Readonly::Array  my @CONF_ITEMS      => qw/ clarity_api
                                             warehouse_mq
                                           /;
 
+##no critic(BuiltinFunctions::ProhibitUselessTopic)
 subtype 'ReadableFile'
       => as 'Str'
       => where { -r $_ };
@@ -24,6 +25,8 @@ subtype 'ReadableFile'
 subtype 'Directory'
       => as 'Str'
       => where { -d $_ };
+
+##use critic
 
 has 'dir_path'  => (
     isa             => 'Directory',
@@ -97,7 +100,7 @@ __END__
 
 =head1 NAME
 
-warehouse_messenger::config::config
+warehouse_messenger::config
 
 =head1 SYNOPSIS
 

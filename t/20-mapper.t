@@ -4,7 +4,7 @@ use warnings;
 use Test::More tests => 4;
 use Test::Exception;
 
-use warehouse_messenger::mapper;
+use_ok('warehouse_messenger::mapper');
 
 {
   my $mq_mapper = warehouse_messenger::mapper->new();

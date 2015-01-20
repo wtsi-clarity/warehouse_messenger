@@ -1,4 +1,4 @@
-package warehouse_messenger::warehouse_messenger::http::batch;
+package warehouse_messenger::http::batch;
 
 use Moose::Role;
 use Carp;
@@ -77,11 +77,11 @@ __END__
 
 =head1 NAME
 
-warehouse_messenger::util::batch
+warehouse_messenger::http::batch
 
 =head1 SYNOPSIS
 
-  with 'warehouse_messenger::util::batch';
+  with 'warehouse_messenger::http::batch';
 
   my $artifacts = $self->batch_retrieve('artifacts', $artifact_uris);
 

@@ -1,4 +1,4 @@
-package warehosue_messenger::mapper;
+package warehouse_messenger::mapper;
 
 use Moose;
 use Carp;

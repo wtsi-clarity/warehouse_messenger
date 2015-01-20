@@ -10,12 +10,12 @@ use Daemon::Control;
 use FindBin qw($Bin);
 use lib ( -d "$Bin/../lib/perl5" ? "$Bin/../lib/perl5" : "$Bin/../lib" );
 use Try::Tiny;
-use wtsi_clarity::warehosue_messenger::config;
-use wtsi_clarity::warehosue_messenger::message_handler;
+use warehouse_messenger::config;
+use warehouse_messenger::message_handler;
 use WTSI::DNAP::RabbitMQ::Client;
 
-my $message_handler = wtsi_clarity::warehosue_messenger::message_handler->new();
-my $config = wtsi_clarity::util::config->new();
+my $message_handler = warehouse_messenger::message_handler->new();
+my $config = warehouse_messenger::config->new();
 
 my $delay_exchange_name = $config->clarity_mq->{'delay_exchange'};
 my $dead_letter_exchange_name = $config->clarity_mq->{'dead_letter_exchange'};

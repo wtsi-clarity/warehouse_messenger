@@ -9,7 +9,6 @@ our $VERSION = '0.0';
 has 'request' => (
   isa => 'warehouse_messenger::http::request',
   is  => 'ro',
-  traits => [ 'NoGetopt' ],
   default => sub { return warehouse_messenger::http::request->new(); },
 );
 
@@ -17,7 +16,6 @@ has 'xml_parser'  => (
   isa             => 'XML::LibXML',
   is              => 'ro',
   required        => 0,
-  traits          => [ 'NoGetopt' ],
   default         => sub { return XML::LibXML->new(); },
 );
 
@@ -32,11 +30,11 @@ __END__
 
 =head1 NAME
 
-wtsi_clarity::util::roles::clarity_request
+warehouse_messenger::roles::clarity_request
 
 =head1 SYNOPSIS
 
-  with 'wtsi_clarity::util::roles::clarity_request';
+  with 'warehouse_messenger::roles::clarity_request';
   $self->fetch_and_parse('http://test.com/test/234');
 
 =head1 DESCRIPTION

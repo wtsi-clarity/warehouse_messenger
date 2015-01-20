@@ -1,20 +1,14 @@
 use warnings;
 use strict;
 
-use Test::More tests => 10;
+use Test::More tests => 8;
 use Test::Exception;
 use Test::MockObject::Extends;
+use XML::LibXML;
 
 use_ok('warehouse_messenger::me::sample_enhancer');
 
-local $ENV{'WTSI_CLARITY_HOME'}= q[t/data/config];
-
-use wtsi_clarity::util::config;
-my $config = wtsi_clarity::util::config->new();
-my $base_uri = $config->clarity_api->{'base_uri'};
-
-local $ENV{'WTSICLARITY_WEBCACHE_DIR'} = 't/data/mq/me/sample_enhancer';
-local $ENV{'SAVE2WTSICLARITY_WEBCACHE'} = 0;
+my $base_dir = 't/data/sample_enhancer/';
 
 {
   my $me = warehouse_messenger::me::sample_enhancer->new(
@@ -27,27 +21,21 @@ local $ENV{'SAVE2WTSICLARITY_WEBCACHE'} = 0;
   can_ok($me, qw/ process_url step_url prepare_messages /);
 }
 
-{ # Test for getting the input artifacts (samples)
-  my $me = warehouse_messenger::me::sample_enhancer->new(
-    process_url => $base_uri . '/processes/24-22682',
-    step_url    => $base_uri . '/steps/24-22682',
+# Test for getting back the correct sample limsids
+{
+
+  my $process_xml = XML::LibXML->load_xml(location => $base_dir . 'processes.24-22682');
+
+  my $me = Test::MockObject::Extends->new(warehouse_messenger::me::sample_enhancer->new(
+    process_doc => $process_xml,
+    process_url => '/processes/24-22682',
+    step_url    => '/steps/24-22682',
     timestamp   => '2014-11-25 12:06:27',
-  );
+  ));
 
-  lives_ok {$me->input_artifacts} 'got input artifacts';
-
-  my $input_artifacts = $me->input_artifacts;
-  my @nodes = $input_artifacts->findnodes(q{ /art:details/art:artifact });
-
-  is(scalar @nodes, 3, 'correct number of input_artifacts');
-}
-
-{ # Test for getting back the correct sample limsids
-  my $me = warehouse_messenger::me::sample_enhancer->new(
-    process_url => $base_uri . '/processes/24-22682',
-    step_url    => $base_uri . '/steps/24-22682',
-    timestamp   => '2014-11-25 12:06:27',
-  );
+  $me->mock(q{input_artifacts}, sub {
+    return XML::LibXML->load_xml(location => $base_dir . 'artifacts.batch');
+  });
 
   my @expected_sample_limsids = [ q{SYY154A2}, q{SYY154A3}, q{SYY154A1} ];
 
@@ -59,14 +47,14 @@ local $ENV{'SAVE2WTSICLARITY_WEBCACHE'} = 0;
 
 {
   my $me = Test::MockObject::Extends->new( warehouse_messenger::me::sample_enhancer->new(
-    process_url => $base_uri . '/processes/24-22682',
-    step_url    => $base_uri . '/steps/24-22682',
+    _lims_ids   => [ q{SYY154A2}, q{SYY154A3}, q{SYY154A1} ],
+    process_url => '/processes/24-22682',
+    step_url    => '/steps/24-22682',
     timestamp   => '2014-11-25 12:06:27',
   ) ) ;
 
-  $me->mock(q{_get_sample_message}, sub {
+  $me->mock(q{_get_model_message}, sub {
     my %test_msg = ( 'key1' => 'value1', 'key2' => 'value2');
-
     return \%test_msg;
   });
 

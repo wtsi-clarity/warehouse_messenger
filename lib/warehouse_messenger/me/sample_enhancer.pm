@@ -15,9 +15,7 @@ sub type {
 
 sub _build__lims_ids {
   my $self = shift;
-
   my $sample_limsid_node_list = $self->sample_limsid_node_list;
-
   return $self->get_values_from_nodelist('getValue', $sample_limsid_node_list);
 }
 
