@@ -13,6 +13,9 @@ Readonly::Scalar my $STUDY_USER_URI_PATH      => q{/prj:project/researcher/@uri}
 # Note 'manager' is the closest role we could use. It might change in the future!
 Readonly::Scalar my $STUDY_USER_MANAGER_ROLE  => q{manager};
 
+Readonly::Scalar my $COST_CODE_PATH           => q{/prj:project/udf:field[@name='WTSI Project Cost Code']};
+
+
 # In the ATTRIBUTES hash: an element's key is the attribute name
 # and the element's value is the XPATH to get the attribute's value
 
@@ -75,6 +78,17 @@ sub _build_manager {
   my $self = shift;
   my @users = map { $self->get_message($_) } @{$self->study_user_ids};
   return to_json(\@users);
+}
+
+has 'cost_code' => (
+  isa => 'Str',
+  is => 'ro',
+  traits => [ 'DoNotSerialize' ],
+  lazy_build => 1,
+);
+sub _build_cost_code {
+  my $self = shift;
+  return $self->findvalue($COST_CODE_PATH);
 }
 
 sub get_message {
