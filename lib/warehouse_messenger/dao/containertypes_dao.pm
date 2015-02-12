@@ -44,8 +44,8 @@ warehouse_messenger::dao::containertypes_dao
   $containertypes_dao->to_message();
 
 =head1 DESCRIPTION
- A data object representing a container.
- Its data coming from the container XML file returned from Clarity API.
+ A data object representing a containertype.
+ It's data coming from the containertype XML file returned from Clarity API.
 
 =head1 SUBROUTINES/METHODS
 
@@ -65,7 +65,7 @@ warehouse_messenger::dao::containertypes_dao
 
 =head1 AUTHOR
 
-Karoly Erdos E<lt>ke4@sanger.ac.ukE<gt>
+Chris Smith E<lt>cs24@sanger.ac.ukE<gt>
 
 =head1 LICENSE AND COPYRIGHT
 

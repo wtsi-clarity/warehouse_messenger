@@ -74,9 +74,10 @@ sub flgen_well_position {
     croak 'Well address should be given';
   }
 
-  my ($letter, $number) = $loc =~ /\A(\w):(\d+)/xms;
+  my ($letter, $number) = $loc =~ /^([A-P]+):(\d{1,2})$/xms;
+
   if (!$letter || !$number) {
-    croak "Well location format '$loc' is not recornised";
+    croak "Well location format '$loc' is not recognised";
   }
 
   if ($number > $nb_cols) {
